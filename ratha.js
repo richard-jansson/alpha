@@ -1,3 +1,5 @@
+var ws;
+
 function update(){
     onLoad();
     console.log("onLoad()");
@@ -5,6 +7,9 @@ function update(){
 
 function update_analysis(){
     var val=$(this).val()
+    var cmd={cmd:"pred",arg0:val}
+    
+    ws.send(JSON.stringify(cmd));
 
     console.log(val);
 }
@@ -25,7 +30,8 @@ $(document).ready(function(){
 
         update();
     });
-
+    
+    ws=new WebSocket("ws://localhost:10000/ex");
 
     $("input.analyze").change(update_analysis);
     $("input.analyze").keydown(update_analysis);

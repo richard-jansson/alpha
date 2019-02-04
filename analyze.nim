@@ -1,6 +1,8 @@
-import os,tables,hashes,system,locks
+import os,tables,hashes,system,locks,ws,asyncdispatch,asynchttpserver,json
 
-    
+type cmd_t = object
+    cmd: string
+    arg0: string
 #~var dict = newTable[string,string]()
 
 let x_max = 2 
@@ -54,3 +56,36 @@ for path in os.walkDirRec(path,{pcFile,pcLinkToFile},{pcDir,pcLinkToDir}):
 #echo "var freqprof*=" & $freq_prof & ".toTable()"
 
 echo "var freqprof=" & $freqprof & ".toTable[string,CountTable[string]]()"
+
+var server = newAsyncHttpServer()
+
+proc predict(x: string): string =
+    echo "looking for " & x
+    if freq_prof.hasKey(x):
+        var ja = newJObject() 
+        var ys=freq_prof[x]
+        for y,f in ys: 
+            ja.add($y,%f)
+        return $ ja
+    else:
+        return "{}" 
+
+proc reqcback(req: Request) {.async,gcsafe.} = 
+    var ws = await newWebsocket(req)
+    while ws.readyState == Open:
+        let packet = await ws.receiveStrPacket()
+        var cmd0: string 
+        var arg0: string
+        try: 
+            let jo = parseJSON(packet)
+            let cmd = to(jo,cmd_t)
+            cmd0=cmd.cmd
+            arg0=cmd.arg0
+            echo arg0
+        except: 
+            echo "Failed to parse message"
+        echo cmd0 & " " & arg0
+#        echo predict(arg0)
+        await ws.sendPacket(predict(arg0)) 
+
+waitFor server.serve(Port(10000),reqcback)
