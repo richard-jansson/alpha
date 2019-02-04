@@ -1,12 +1,24 @@
-import os,tables,hashes,system,locks,ws,asyncdispatch,asynchttpserver,json
+import os,tables,hashes,system,locks,ws,asyncdispatch,asynchttpserver,json,sequtils,algorithm
 
 type cmd_t = object
     cmd: string
     arg0: string
+
+type Entry = tuple[x: string, f: float64]
+
+proc compEntry(x: Entry, y: Entry): int = 
+    if x.f == y.f:
+        return 0
+    if x.f > y.f:
+        return 1
+    else:
+        return -1 
+
 #~var dict = newTable[string,string]()
 
-let x_max = 2 
-let y_max = 1
+let x_max = 6 
+let y_max = 4
+var e_dropoff = 2.71828
 
 #let path="/home/richard/sdb6/corpus"
 let path="/home/richard/proj/alpha/corpus"
@@ -15,9 +27,13 @@ var freq_prof = newTable[string,CountTable[string]]()
 proc procString(data: string,xlen: int, ylen: int) = 
 #    echo "{" & $xlen & "} => {" & $ylen & "}"
     for x in countup(xlen,data.len-ylen-2):
-        var xs=data[x-xlen..x]  
-        var ys=data[x+1..x+1+ylen]
-#        echo xs & " => " & ys
+        var xs: string
+        if xlen == 0: 
+            xs=""
+        else: 
+            xs=data[x-xlen..x-1]  
+        var ys=data[x..x+ylen-1]
+#        echo "[" & xs & "] => " & ys
         if freq_prof.hasKey(xs):
             freq_prof[xs].inc(ys)
         else:
@@ -59,16 +75,58 @@ echo "var freqprof=" & $freqprof & ".toTable[string,CountTable[string]]()"
 
 var server = newAsyncHttpServer()
 
-proc predict(x: string): string =
-    echo "looking for " & x
-    if freq_prof.hasKey(x):
-        var ja = newJObject() 
-        var ys=freq_prof[x]
-        for y,f in ys: 
-            ja.add($y,%f)
-        return $ ja
-    else:
-        return "{}" 
+proc predict(xs: string): string =
+    echo "looking for [" & xs & "]"
+    var ja = newJObject() 
+    var resp : seq[Entry]
+
+    var l_max = x_max
+
+
+    if xs.len < x_max:
+        l_max = xs.len
+    
+    echo "0 -> " & $l_max
+    echo "slen: " & $xs.len
+
+    var mult : float64 = 1
+
+    for l in countup(0,l_max):
+        echo $l & "/" & $l_max
+        var x: string
+        if l == 0:
+            x=""
+        else:
+            x=xs[xs.len-l..xs.len-1]
+        echo "matching against: [" & x & "]"
+
+        if freq_prof.hasKey(x):
+            var ys=freq_prof[x]
+            for y,f in ys: 
+                var f0= float(f)*mult
+                var e: Entry = (y,f0)
+                resp.insert(e)
+#                ja.add($y,%f0)
+        mult= mult * e_dropoff
+#    echo ja
+    echo "sorting"
+    sort(resp,compEntry,SortOrder.Descending)
+    echo "sorting done"
+    var i = 0 
+    for k in resp:
+        var y: string 
+        var f: float64
+        y=k.x
+        f=k.f
+        if i > 20:
+            break
+        ja.add($y,% f)
+        inc(i)
+
+    echo $ja
+
+    return $ ja
+#    return "{}"
 
 proc reqcback(req: Request) {.async,gcsafe.} = 
     var ws = await newWebsocket(req)
