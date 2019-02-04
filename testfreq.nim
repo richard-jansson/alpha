@@ -1,0 +1,3 @@
+import freqprof
+
+echo "test"

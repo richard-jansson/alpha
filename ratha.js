@@ -2,14 +2,21 @@ function update(){
     onLoad();
     console.log("onLoad()");
 }
+
+function update_analysis(){
+    var val=$(this).val()
+
+    console.log(val);
+}
+
 $(document).ready(function(){
-    $("input").each(function(){
+    $("input.ind").each(function(){
         var id=$(this).attr("id");
         var val=Cookies.get(id);
         if(typeof(val)=="undefined") return;
         $(this).val(val);
     });
-    $("input").change(function(){
+    $("input.ind").change(function(){
         tmp=$(this);
         var id=$(this).attr("id");
         var val=$(this).val();
@@ -18,5 +25,9 @@ $(document).ready(function(){
 
         update();
     });
+
+
+    $("input.analyze").change(update_analysis);
+    $("input.analyze").keydown(update_analysis);
 }); 
 
