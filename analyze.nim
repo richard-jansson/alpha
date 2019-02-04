@@ -73,19 +73,25 @@ proc predict(x: string): string =
 proc reqcback(req: Request) {.async,gcsafe.} = 
     var ws = await newWebsocket(req)
     while ws.readyState == Open:
-        let packet = await ws.receiveStrPacket()
-        var cmd0: string 
-        var arg0: string
-        try: 
-            let jo = parseJSON(packet)
-            let cmd = to(jo,cmd_t)
-            cmd0=cmd.cmd
-            arg0=cmd.arg0
-            echo arg0
+        try:
+            let packet = await ws.receiveStrPacket()
+            var cmd0: string 
+            var arg0: string
+            try: 
+                let jo = parseJSON(packet)
+                let cmd = to(jo,cmd_t)
+                cmd0=cmd.cmd
+                arg0=cmd.arg0
+                echo arg0
+            except: 
+                echo "Failed to parse message"
+            echo cmd0 & " " & arg0
+    #        echo predict(arg0)
+            try:
+                await ws.sendPacket(predict(arg0)) 
+            except: 
+                echo "failed to send"
         except: 
-            echo "Failed to parse message"
-        echo cmd0 & " " & arg0
-#        echo predict(arg0)
-        await ws.sendPacket(predict(arg0)) 
+            echo "failed to wait"
 
 waitFor server.serve(Port(10000),reqcback)

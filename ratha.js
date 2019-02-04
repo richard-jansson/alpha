@@ -14,6 +14,26 @@ function update_analysis(){
     console.log(val);
 }
 
+function recvPred(d){
+    tmp=d;
+    var msg=JSON.parse(d.data)
+    console.log(msg)
+
+    var o=$("#textresult");
+    o.html("");
+    for(k in msg){
+        var e=$("<div></div>",{class:"object"})
+        var y=$("<div></div>",{class:"string"})
+        var f=$("<div></div>",{class:"freq"})
+        y.html(k);
+        f.html("["+msg[k]+"]");
+        e.append(y);
+        e.append(f);
+        o.append(e);
+    }
+    
+}
+
 $(document).ready(function(){
     $("input.ind").each(function(){
         var id=$(this).attr("id");
@@ -33,7 +53,11 @@ $(document).ready(function(){
     
     ws=new WebSocket("ws://localhost:10000/ex");
 
+    ws.onmessage=recvPred
+
+//    ws.onopen=update_analysis;
+
     $("input.analyze").change(update_analysis);
-    $("input.analyze").keydown(update_analysis);
+    $("input.analyze").keyup(update_analysis);
 }); 
 
