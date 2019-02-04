@@ -5,22 +5,19 @@ function update(){
     console.log("onLoad()");
 }
 
-function update_analysis(a){
-    var val;
-    if(typeof(a)=="undefined") val=$(this).val()
-    else val=a;
-
-    var cmd={cmd:"pred",arg0:val}
+function get_pred(arg0){
+    var cmd={cmd:"pred",arg0:arg0}
     
     ws.send(JSON.stringify(cmd));
-
-    console.log(val);
+}
+function update_analysis(a){
+    var val=$(this).val();
+    get_pred(val);
 }
 
 function recvPred(d){
     tmp=d;
     var msg=JSON.parse(d.data)
-    console.log(msg)
 
     var o=$("#textresult");
     o.html("");
@@ -34,12 +31,14 @@ function recvPred(d){
         e.append(f);
         o.append(e);
     }
+
+    console.log("DOM updated");
     
 }
 
 function on_conn(){
     $("#con").html("connected");
-    update_analysis($("input.analyze").val());
+    get_pred($("input.analyze").val());
 }
 function on_close(){
     $("#con").html("closed");
