@@ -5,8 +5,11 @@ function update(){
     console.log("onLoad()");
 }
 
-function update_analysis(){
-    var val=$(this).val()
+function update_analysis(a){
+    var val;
+    if(typeof(a)=="undefined") val=$(this).val()
+    else val=a;
+
     var cmd={cmd:"pred",arg0:val}
     
     ws.send(JSON.stringify(cmd));
@@ -34,6 +37,14 @@ function recvPred(d){
     
 }
 
+function on_conn(){
+    $("#con").html("connected");
+    update_analysis($("input.analyze").val());
+}
+function on_close(){
+    $("#con").html("closed");
+}
+
 $(document).ready(function(){
     $("input.ind").each(function(){
         var id=$(this).attr("id");
@@ -55,7 +66,8 @@ $(document).ready(function(){
 
     ws.onmessage=recvPred
 
-//    ws.onopen=update_analysis;
+    ws.onopen=on_conn;
+    ws.onclose=on_close;
 
     $("input.analyze").change(update_analysis);
     $("input.analyze").keyup(update_analysis);
