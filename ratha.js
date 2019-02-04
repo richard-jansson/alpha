@@ -1,5 +1,6 @@
 function update(){
-    console.log("stub update");
+    onLoad();
+    console.log("onLoad()");
 }
 $(document).ready(function(){
     $("input").each(function(){
@@ -14,6 +15,8 @@ $(document).ready(function(){
         var val=$(this).val();
 
         Cookies.set(id,val);
+
+        update();
     });
 }); 
 
