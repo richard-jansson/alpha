@@ -1,8 +1,17 @@
 var ws;
+var cfg={};
 
-function update(){
-    onLoad();
+function update(cfg){
     console.log("onLoad()");
+    var __cfg={};
+    for(var k in cfg){
+        var i=parseInt(cfg[k]);
+        var f=parseFloat(cfg[k]);
+        if(f!=NaN) __cfg[k]=f;
+        else if(i!=NaN) __cfg[k]=i;
+        else __cfg[k]=cfg[k];
+    }
+    onLoad(__cfg);
 }
 
 function get_pred(arg0){
@@ -47,18 +56,24 @@ function on_close(){
 $(document).ready(function(){
     $("input.ind").each(function(){
         var id=$(this).attr("id");
-        var val=Cookies.get(id);
-        if(typeof(val)=="undefined") return;
-        $(this).val(val);
+        var cval=Cookies.get(id);
+        var oval=$(this).val();
+        if(typeof(val)!="undefined"){
+            $(this).val(val);
+        }else{
+            cfg[id]=oval;
+        }
     });
+    update(cfg);
     $("input.ind").change(function(){
         tmp=$(this);
         var id=$(this).attr("id");
         var val=$(this).val();
 
         Cookies.set(id,val);
+        cfg[id]=val;
 
-        update();
+        update(cfg);
     });
     
     ws=new WebSocket("ws://localhost:10000/ex");

@@ -1,4 +1,4 @@
-import dom,jsconsole,gamelight/graphics
+import dom,jsconsole,gamelight/graphics,jsffi
 
 let W = 640
 let H = 480
@@ -32,11 +32,17 @@ proc render(node: Node) =
 #proc newNode*(renderer: Renderer2D,x: int,y: int,w: int, h: int): Node =
 #    result = Node(renderer,x,y,w,h)
 
+
 # Startup 
-proc onLoad(event: Event) {.exportc.} =
+proc onLoad(cfg: JsObject) {.exportc.} =
     # paint bg white and get renderer
     var renderer=newRenderer2D("tdash",W,H)
     renderer.fillRect(0,0,W,H,"#ffffff") 
+
+    for k,v in cfg:
+        console.log(k);
+    for k,v in cfg:
+        console.log(v);
     
     # Create our root node 
     var root=Node(
@@ -44,9 +50,16 @@ proc onLoad(event: Event) {.exportc.} =
         x: X0,
         y: Y0,
         w: W0,
-        h: H0)
+        h: H0,
+        N: cfg.leaves,
+        M: cfg.branches,
+        ao: cfg.offset,
+        a: cfg.fov_leaves,
+        b: cfg.fov_branches,
+        fov: cfg.fov
+        )
 
     root.render() 
 
 
-window.onload = onLoad
+#window.onload = onLoad
