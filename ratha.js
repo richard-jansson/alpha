@@ -11,6 +11,7 @@ function update(cfg){
         else if(i!=NaN) __cfg[k]=i;
         else __cfg[k]=cfg[k];
     }
+    console.log(__cfg)
     onLoad(__cfg);
 }
 
@@ -58,8 +59,9 @@ $(document).ready(function(){
         var id=$(this).attr("id");
         var cval=Cookies.get(id);
         var oval=$(this).val();
-        if(typeof(val)!="undefined"){
-            $(this).val(val);
+        if(typeof(cval)!="undefined"){
+            $(this).val(cval);
+            cfg[id]=cval;
         }else{
             cfg[id]=oval;
         }
