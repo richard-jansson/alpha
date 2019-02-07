@@ -1,9 +1,17 @@
-.entry,.result {
+.entry,.result,.status {
     float: left;
-    width: 20%;
     border: 1px solid black;
-    margin: 0 5%;
-    padding: 5%;
+    margin: 2%;
+    padding: 3%;
+
+}
+
+.entry {
+    width: 45%;
+}
+
+.status {
+    width: 29%;
 }
 
 .object {
@@ -17,13 +25,14 @@
 
 .string {
     color: #000;
-    font-size: 42px;
-    line-height: 63px;
+    font-size: 27px;
+    line-height: 42px;
 }
 .freq {
     color: #aaa;
-    font-size: 24px;
-    line-height: 63px;
+    font-size: 12px;
+    line-height: 42px;
     font-style: italic;
     float: right;
+    margin-left: 5px;
 }

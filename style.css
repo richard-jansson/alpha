@@ -4,6 +4,11 @@ body {
     padding-top: 42px;
 }
 
+#main {
+    width: 100%;
+    float: left;
+}
+
 #ctrls {
     padding: 20px;
     width: 50%;
@@ -19,4 +24,9 @@ body {
     display: block;
     float: left;
     clear: right;
+}
+
+.clr {
+    float: left;
+    clear: both;
 }
