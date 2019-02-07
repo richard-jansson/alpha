@@ -2,6 +2,7 @@ var ws;
 var cfg={};
 
 function update(cfg){
+    if(typeof(onLoad)!="function") return;
     console.log("onLoad()");
     var __cfg={};
     for(var k in cfg){
@@ -31,15 +32,19 @@ function recvPred(d){
 
     var o=$("#textresult");
     o.html("");
+    var i=0;
     for(k in msg){
+        var c=msg[k];
         var e=$("<div></div>",{class:"object"})
         var y=$("<div></div>",{class:"string"})
         var f=$("<div></div>",{class:"freq"})
-        y.html(k);
-        f.html("["+msg[k]+"]");
+        y.html(c.s);
+        f.html("["+c.f+"]");
         e.append(y);
         e.append(f);
         o.append(e);
+        i++;
+        if(i>200) break;
     }
 
     console.log("DOM updated");
