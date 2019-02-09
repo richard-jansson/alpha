@@ -1,4 +1,4 @@
-import dom,jsconsole,gamelight/[graphics,vec],jsffi,math
+import dom,jsconsole,gamelight/[graphics,vec],jsffi,math,amath
 
 let W = 640
 let H = 480
@@ -7,6 +7,9 @@ let X0= 320
 let Y0 = 432
 let W0 = 512
 let H0 = 384 
+
+var mx = -1
+var my = -1
 
 type
     Node = ref object of RootObj
@@ -24,7 +27,6 @@ type
         fovob: int
         k: float
         depth: int
-
 
 proc render(node: Node) = 
     if(node.depth>3):
@@ -100,8 +102,9 @@ proc render(node: Node) =
         ax=ax+db/2-fov/2
         # next node
         var pbr=p0+u
+        var u0=u
         var a0=u.angle()+180
-        console.log(a0)
+#        console.log(a0)
         u=u.rotate(float(db/2),Point[float](x:0,y:0))
         ax=ax+db/2
         var pc=p0+u
@@ -112,6 +115,19 @@ proc render(node: Node) =
         var tr=float(node.r)/k
 #        console.log(tr)
 
+# Calculate coef 
+        var realc=Point[float](x:float(mx),y:float(my))
+        var cv=realc-p0
+        
+        var t = cv.dot(u0) 
+        var s = t / u0.len2()
+        var cp = u0 * s
+
+        if s > 0 :
+            node.renderer.strokeLine(p0,p0+cv)
+            node.renderer.strokeLine(p0,p0+cp)
+        
+#        node.renderer.strokeLine(p0,pbr)
 
         var branch=Node(
             renderer:node.renderer,
@@ -136,7 +152,10 @@ proc render(node: Node) =
 
 
 # Startup 
-proc onLoad(cfg: JsObject) {.exportc.} =
+proc onLoad(cfg: JsObject, x: int, y: int) {.exportc.} =
+#    console.log($x & "," & $y)
+    mx = x
+    my = y
     # paint bg white and get renderer
     var renderer=newRenderer2D("tdash",W,H)
     renderer.fillRect(0,0,W,H,"#ffffff") 
@@ -146,10 +165,10 @@ proc onLoad(cfg: JsObject) {.exportc.} =
         console.log(k);
     for k,v in cfg:
         console.log(v)
-]#
     for k,v in cfg:
         console.log(k)
         console.log(v)
+]#
 
 #    var ao : int 
 #    console.log(cfg.offset.jsTypeOf())
