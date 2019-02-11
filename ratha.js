@@ -1,9 +1,9 @@
 var ws;
 var cfg={};
 
-function update(cfg){
+function update(cfg,x,y){
     if(typeof(onLoad)!="function") return;
-    console.log("onLoad()");
+//    console.log("onLoad()");
     var __cfg={};
     for(var k in cfg){
         var i=parseInt(cfg[k]);
@@ -12,8 +12,8 @@ function update(cfg){
         else if(i!=NaN) __cfg[k]=i;
         else __cfg[k]=cfg[k];
     }
-    console.log(__cfg)
-    onLoad(__cfg);
+//    console.log(__cfg)
+    onLoad(__cfg,x,y);
 }
 
 function get_pred(arg0){
@@ -71,7 +71,7 @@ $(document).ready(function(){
             cfg[id]=oval;
         }
     });
-    update(cfg);
+    update(cfg,-1,-1);
     $("input.ind").change(function(){
         tmp=$(this);
         var id=$(this).attr("id");
@@ -80,7 +80,7 @@ $(document).ready(function(){
         Cookies.set(id,val);
         cfg[id]=val;
 
-        update(cfg);
+        update(cfg,-1,-1);
     });
     
     ws=new WebSocket("ws://localhost:10000/ex");
@@ -92,5 +92,10 @@ $(document).ready(function(){
 
     $("input.analyze").change(update_analysis);
     $("input.analyze").keyup(update_analysis);
+
+    $("#tdash").mousemove(function(e){
+//        console.log(e.offsetX + ", "+e.offsetY);
+        update(cfg,e.offsetX,e.offsetY)
+    })
 }); 
 
