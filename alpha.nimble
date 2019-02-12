@@ -1,10 +1,13 @@
 # Package
 
-version     = "0.0.1"
-author      = "Richard J. Jansson"
-description = "Experiment in user input"
-license     = "MIT"
+version       = "0.1.0"
+author        = "Richard J. Jansson"
+description   = "Text input using modified fractal based dasher method"
+license       = "GPL-2.0"
+srcDir        = "src"
+bin           = @["alpha"]
+
 
 # Dependencies
 
-requires "nim","gamelight","websocket","jswebsockets"
+requires "nim >= 0.19.4", "ws", "gamelight"
