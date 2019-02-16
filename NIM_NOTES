@@ -1,0 +1,4 @@
+Note that all the c files have a nim interface with an i suffix
+    \__ what about alsarec what?
+c2nim --cdecl 
+then add importc

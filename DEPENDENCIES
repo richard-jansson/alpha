@@ -1,0 +1,5 @@
+asoundlib.h
+
+libasound2-dev
+
+https://github.com/mborgerding/kissfft

@@ -1,2 +1,5 @@
 write tests
 request cache
+only scale first next step vector
+c code as external dependency 
+make sure no assert in alsarec or fft

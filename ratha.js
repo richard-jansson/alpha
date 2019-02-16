@@ -1,4 +1,5 @@
 var ws;
+var ws_listen;
 var cfg={};
 
 function update(cfg,x,y){
@@ -19,7 +20,7 @@ function update(cfg,x,y){
 function get_pred(arg0){
     var cmd={cmd:"pred",arg0:arg0}
     
-    ws.send(JSON.stringify(cmd));
+//    ws.send(JSON.stringify(cmd));
 }
 function update_analysis(a){
     var val=$(this).val();
@@ -59,6 +60,16 @@ function on_close(){
     $("#con").html("closed");
 }
 
+// VAC protocol, listen 
+function list_recvcmd(m){
+    tmp1=m
+    console.log(tmp1)
+}
+function list_on_conn(){
+    $("#con").html("connected");
+    get_pred($("input.analyze").val());
+}
+
 $(document).ready(function(){
     $("input.ind").each(function(){
         var id=$(this).attr("id");
@@ -83,12 +94,12 @@ $(document).ready(function(){
         update(cfg,-1,-1);
     });
     
-    ws=new WebSocket("ws://localhost:10000/ex");
+/*    ws=new WebSocket("ws://localhost:10000/ex");
 
     ws.onmessage=recvPred
-
     ws.onopen=on_conn;
     ws.onclose=on_close;
+*/
 
     $("input.analyze").change(update_analysis);
     $("input.analyze").keyup(update_analysis);
@@ -97,5 +108,12 @@ $(document).ready(function(){
 //        console.log(e.offsetX + ", "+e.offsetY);
         update(cfg,e.offsetX,e.offsetY)
     })
+
+    ws_listen=new WebSocket("ws://localhost:10000/ws/attach")
+
+
+    ws_listen.onmessage=list_recvcmd;
+    ws_listen.onopen=list_on_conn;
+    ws_listen.onclose=on_close;
 }); 
 

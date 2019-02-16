@@ -3,3 +3,10 @@ nimcache
 alpha
 corpus/*
 analyze
+ext/*
+libkissfft.so
+kiss_fftr.c
+*.o
+*raw
+*wav
+hermes
